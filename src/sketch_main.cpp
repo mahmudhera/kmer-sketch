@@ -17,6 +17,26 @@ static void usage() {
               << "[--canonical] [--keep-ambiguous] --output OUT\n";
 }
 
+
+
+static void detailed_usage() {
+    std::cerr << "Options:\n"
+              << "  --input FILE            Input FASTA/FASTQ file\n"
+              << "  --kmer N                K-mer size (default: 31)\n"
+              << "  --algo ALGO             Sketching algorithm to use: maxgeom, alphamaxgeom, fracminhash, minhash, bottomk\n"
+              << "  --k K                   (maxgeom, bottomk) Sketch size K (default: 64 for maxgeom, 1000 for bottomk)\n"
+              << "  --w W                   (maxgeom, alphamaxgeom) Window size W (default: 64)\n"
+              << "  --alpha A               (alphamaxgeom) Alpha parameter (default: 0.5)\n"
+              << "  --scale S               (fracminhash) Scale parameter (default: 0.1)\n"
+              << "  --num-perm M            (minhash) Number of permutations M (default: 128)\n"
+              << "  --seed SEED             Random seed (default: 42)\n"
+              << "  --canonical             Use canonical k-mers\n"
+              << "  --keep-ambiguous        Keep ambiguous k-mers (default: skip them)\n"
+              << "  --output OUT            Output sketch file\n"
+              << "  --help, -h              Show this help message\n";
+}
+
+
 // Simple arg parsing
 static std::string get_arg(std::vector<std::string>& args, const std::string& key, const std::string& def="") {
     for (size_t i=0;i<args.size();++i) if (args[i]==key && i+1<args.size()) return args[i+1];
@@ -29,11 +49,25 @@ static bool has_flag(const std::vector<std::string>& args, const std::string& ke
 
 int main(int argc, char** argv) {
     if (argc < 2) { usage(); return 1; }
+
+    // check if --help is requested
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "-h") {
+            usage();
+            return 0;
+        } else if (arg == "--help") {
+            detailed_usage();
+            return 0;
+        }
+    }
+
     std::vector<std::string> args(argv+1, argv+argc);
     std::string inpath = get_arg(args, "--input");
     std::string algo = get_arg(args, "--algo");
     std::string outpath = get_arg(args, "--output");
     if (inpath.empty() || algo.empty() || outpath.empty()) { usage(); return 1; }
+
     size_t kmer = (size_t)std::stoull(get_arg(args, "--kmer", "31"));
     uint64_t seed = (uint64_t)std::stoull(get_arg(args, "--seed", "42"));
     bool canonical = has_flag(args, "--canonical");
