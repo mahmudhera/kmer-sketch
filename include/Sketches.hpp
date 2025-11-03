@@ -240,10 +240,11 @@ public:
         if (!(alpha > 0.0 && alpha < 1.0)) throw std::runtime_error("alpha must be in (0,1)");
         if (w_ < 1 || w_ > 64) throw std::runtime_error("w must be in [1,64]");
         k_sizes_.resize(w_+1, 1);
-        double beta = 1.0/(1.0-alpha_) - 1.0;
-        for (size_t i=1; i<=w_; ++i) {
-            double val = std::pow(2.0, beta * (double)i - 1.0);
-            size_t k = (size_t)val + 1;
+        double beta = alpha_/(1.0-alpha_);
+        for (size_t i=0; i<=w_; ++i) {
+            double val = std::pow(2.0, beta * (double)i);
+            // take ceiling of val
+            size_t k = (size_t)std::ceil(val);
             if (k < 1) k = 1;
             k_sizes_[i] = k;
         }
