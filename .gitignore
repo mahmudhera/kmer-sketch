@@ -39,3 +39,22 @@
 
 # debug information files
 *.dwo
+
+# fasta files
+*.fasta
+*.fa
+*.fna
+*.ffn
+*.faa
+*.frn
+
+# fastq files
+*.fastq
+*.fq
+*.fastq.gz
+*.fq.gz
+
+
+# all binaries and builds
+bin/*
+build/*
