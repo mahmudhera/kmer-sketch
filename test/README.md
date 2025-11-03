@@ -17,3 +17,17 @@ To run this test, stay in the parent directory (do not cd in the test directory)
 ```
 python test/test_fracminhash.py 
 ```
+
+## MaxGeomSampling
+Test script name: `test_maxgeom.py`. This records average size of MGS samples, for different set sizes, and different k parameters. Then, I manually checked with the Python implementation that the results agree.
+
+```
+python test/test_maxgeom.py 
+```
+
+## AlphaMaxGeomSampling
+Test script name: `test_alpha_maxgeom.py`. This records average size of a-MGS samples, for different set sizes, and different alpha parameters. Then, I manually checked with the Python implementation that the results agree.
+
+```
+python test/test_alpha_maxgeom.py 
+```
