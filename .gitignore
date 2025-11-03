@@ -63,8 +63,4 @@ build/*
 .DS_Store
 
 # others
-results/apple_fmh_sketch
-results/test
-results/fmh_sketch_sourmash
-.gitignore
-results/fmh_sketch_our_impl
+outputs/*
