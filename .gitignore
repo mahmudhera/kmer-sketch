@@ -58,3 +58,6 @@
 # all binaries and builds
 bin/*
 build/*
+
+# mac specific files
+.DS_Store
