@@ -7,3 +7,6 @@ data downloaded from
 ```
 make
 ```
+
+## Tests
+Instructions in the test folder. Test code is written in Python for fast coding.
