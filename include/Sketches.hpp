@@ -91,6 +91,50 @@ public:
         return double(inter_size) / double(union_size);
     }
 
+
+    double containment_in(const MaxGeomSample& other) const {
+        if (w_ != other.w_ || k_ != other.k_)
+            throw std::runtime_error("Incompatible MaxGeomSample for Containment (w or k differ)");
+        size_t inter_sum = 0, denom_sum = 0;
+
+        for (const auto& kv : buckets_) {
+            size_t i = kv.first;
+            auto it2 = other.buckets_.find(i);
+            if (it2 == other.buckets_.end()) continue;
+
+            // Build sets of h' (dedup within bucket)
+            std::unordered_set<uint64_t> self_hprimes; self_hprimes.reserve(kv.second.size()*2);
+            for (const auto& e : kv.second) self_hprimes.insert(e.second.hprime);
+
+            std::unordered_set<uint64_t> other_hprimes; other_hprimes.reserve(it2->second.size()*2);
+            for (const auto& e : it2->second) other_hprimes.insert(e.second.hprime);
+
+            // Capacity-limited union (descending, then unique, capped at k_)
+            std::vector<uint64_t> uni; uni.reserve(self_hprimes.size() + other_hprimes.size());
+            for (auto x: self_hprimes) uni.push_back(x);
+            for (auto x: other_hprimes) uni.push_back(x);
+            std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
+            uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
+            if (uni.size() > k_) uni.resize(k_);
+
+            std::unordered_set<uint64_t> allow(uni.begin(), uni.end());
+
+            // Denominator = how many of self's kept elements survive capacity cap
+            size_t denom_bucket = 0;
+            for (auto x : self_hprimes) if (allow.count(x)) ++denom_bucket;
+
+            // Intersection = overlap that also survives capacity cap
+            size_t inter_bucket = 0;
+            for (auto x : self_hprimes) if (allow.count(x) && other_hprimes.count(x)) ++inter_bucket;
+
+            denom_sum += denom_bucket;
+            inter_sum += inter_bucket;
+        }
+        if (denom_sum == 0) return 1.0; // both empty under caps ⇒ define containment as 1
+        return double(inter_sum) / double(denom_sum);
+    }
+
+
     double cosine(const MaxGeomSample& other) const {
         if (w_ != other.w_ || k_ != other.k_) throw std::runtime_error("Incompatible MaxGeomSample for Cosine");
         double dot = 0.0, n1 = 0.0, n2 = 0.0;
@@ -301,6 +345,46 @@ public:
         }
         if (union_size == 0) return 1.0;
         return double(inter_size) / double(union_size);
+    }
+
+    double containment_in(const AlphaMaxGeomSample& other) const {
+        if (w_ != other.w_ || alpha_ != other.alpha_)
+            throw std::runtime_error("Incompatible AlphaMaxGeomSample for Containment (w or alpha differ)");
+        size_t inter_sum = 0, denom_sum = 0;
+
+        for (const auto& kv : buckets_) {
+            size_t i = kv.first;
+            auto it2 = other.buckets_.find(i);
+            if (it2 == other.buckets_.end()) continue;
+
+            std::unordered_set<uint64_t> self_hprimes; self_hprimes.reserve(kv.second.size()*2);
+            for (const auto& e : kv.second) self_hprimes.insert(e.second.hprime);
+
+            std::unordered_set<uint64_t> other_hprimes; other_hprimes.reserve(it2->second.size()*2);
+            for (const auto& e : it2->second) other_hprimes.insert(e.second.hprime);
+
+            // Capacity-limited union (cap depends on bucket i)
+            std::vector<uint64_t> uni; uni.reserve(self_hprimes.size() + other_hprimes.size());
+            for (auto x: self_hprimes) uni.push_back(x);
+            for (auto x: other_hprimes) uni.push_back(x);
+            std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
+            uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
+            size_t cap = k_sizes_[i];
+            if (uni.size() > cap) uni.resize(cap);
+
+            std::unordered_set<uint64_t> allow(uni.begin(), uni.end());
+
+            size_t denom_bucket = 0;
+            for (auto x : self_hprimes) if (allow.count(x)) ++denom_bucket;
+
+            size_t inter_bucket = 0;
+            for (auto x : self_hprimes) if (allow.count(x) && other_hprimes.count(x)) ++inter_bucket;
+
+            denom_sum += denom_bucket;
+            inter_sum += inter_bucket;
+        }
+        if (denom_sum == 0) return 1.0;
+        return double(inter_sum) / double(denom_sum);
     }
 
     double cosine(const AlphaMaxGeomSample& other) const {

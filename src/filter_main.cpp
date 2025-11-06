@@ -13,7 +13,7 @@ static void usage() {
               << "  filter --query Q.sketch "
               << "--refs R1.sketch [R2.sketch ...] "
               << "[--refs @list.txt] [--refs-filelist list.txt] "
-              << "--metric {jaccard|cosine} --threshold X [--output OUT.tsv]\n";
+              << "--metric {jaccard|containment|cosine} --threshold X [--output OUT.tsv]\n";
 }
 
 static std::string get_arg(std::vector<std::string>& args, const std::string& key, const std::string& def="") {
@@ -109,21 +109,6 @@ int main(int argc, char** argv) {
         }
     }
 
-    // 3) (Optional) If you still want to accept refs as bare args not behind flags,
-    //    uncomment this guarded version that only grabs likely sketch files or @lists:
-    /*
-    for (size_t i=0;i<args.size();++i) {
-        const std::string& s = args[i];
-        if (!s.empty() && s.rfind("--",0)!=0 && s != qpath) {
-            if (s[0] == '@' || (s.size() >= 7 && s.rfind(".sketch") == s.size()-7)) {
-                add_ref_token(refs, s);
-            }
-        }
-    }
-    */
-    // NOTE: We intentionally removed the old unconditional "bare args" loop because it
-    // would also scoop up values from --metric/--threshold/--output.
-
     // de-dup
     std::sort(refs.begin(), refs.end());
     refs.erase(std::unique(refs.begin(), refs.end()), refs.end());
@@ -133,7 +118,7 @@ int main(int argc, char** argv) {
     // Load query
     VariantSketch q = load_sketch(qpath);
 
-    // Load refs and compute scores (unchanged)
+    // Load refs and compute scores
     struct Row { std::string path; double score; size_t inter; size_t size1; size_t size2; size_t uni; };
     std::vector<Row> rows;
 
@@ -148,11 +133,16 @@ int main(int argc, char** argv) {
             }
             double s = 0.0; size_t inter=0, uni=0, size1=0, size2=0;
             if (q.maxgeom && r.maxgeom) {
-                s = (metric=="cosine") ? q.maxgeom->cosine(*r.maxgeom) : q.maxgeom->jaccard(*r.maxgeom);
+                if (metric=="cosine") s = q.maxgeom->cosine(*r.maxgeom);
+                else if (metric=="containment") s = r.maxgeom->containment_in(*q.maxgeom);
+                else s = q.maxgeom->jaccard(*r.maxgeom);
+
                 for (auto& kv: q.maxgeom->buckets()) size1 += kv.second.size();
                 for (auto& kv: r.maxgeom->buckets()) size2 += kv.second.size();
             } else if (q.alphamaxgeom && r.alphamaxgeom) {
-                s = (metric=="cosine") ? q.alphamaxgeom->cosine(*r.alphamaxgeom) : q.alphamaxgeom->jaccard(*r.alphamaxgeom);
+                if (metric=="cosine") s = q.alphamaxgeom->cosine(*r.alphamaxgeom);
+                else if (metric=="containment") s = r.alphamaxgeom->containment_in(*q.alphamaxgeom);
+                else s = q.alphamaxgeom->jaccard(*r.alphamaxgeom);
                 for (auto& kv: q.alphamaxgeom->buckets()) size1 += kv.second.size();
                 for (auto& kv: r.alphamaxgeom->buckets()) size2 += kv.second.size();
             } else if (q.fracmh && r.fracmh) {
