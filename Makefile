@@ -10,12 +10,14 @@ BUILD_DIR := build
 # Executables
 BINS := $(BIN_DIR)/sketch \
         $(BIN_DIR)/filter \
-        $(BIN_DIR)/pwsimilarity
+        $(BIN_DIR)/pwsimilarity\
+		$(BIN_DIR)/expt_growth
 
 # Sources/objects
 SRCS := $(SRC_DIR)/sketch_main.cpp \
         $(SRC_DIR)/filter_main.cpp \
-        $(SRC_DIR)/pwsim_main.cpp
+        $(SRC_DIR)/pwsim_main.cpp \
+        $(SRC_DIR)/expt_growth.cpp
 
 OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
@@ -39,6 +41,9 @@ $(BIN_DIR)/filter: $(BUILD_DIR)/filter_main.o | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 $(BIN_DIR)/pwsimilarity: $(BUILD_DIR)/pwsim_main.o | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+$(BIN_DIR)/expt_growth: $(BUILD_DIR)/expt_growth.o | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 # Clean
