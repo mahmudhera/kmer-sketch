@@ -296,8 +296,12 @@ static void run_experiment(double t,
 
         // true similarity
         size_t inter = 0;
-        if (A.size() < B.size()) for (auto& s : A) if (B.count(s)) ++inter;
-        else                      for (auto& s : B) if (A.count(s)) ++inter;
+        if (A.size() < B.size()) {
+            for (auto& s : A) if (B.count(s)) ++inter;
+        }
+        else {
+            for (auto& s : B) if (A.count(s)) ++inter;
+        }
 
         const double true_j = double(inter) / double(A.size() + B.size() - inter);
         const double true_c = double(inter) / std::sqrt(double(A.size()) * double(B.size()));
@@ -307,6 +311,7 @@ static void run_experiment(double t,
         long double sum_sA = 0.0L, sum_sB = 0.0L;
 
         for (uint64_t s : seeds) {
+            std::cout << "Step " << step << ", n=" << n << ", seed=" << s << "\r";
             EstResult r;
             if (algo == "maxgeom") {
                 r = estimate_maxgeom(A, B, s, metric, k, w);

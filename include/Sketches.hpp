@@ -728,6 +728,7 @@ public:
     size_t num_perm() const { return num_perm_; }
     const std::vector<uint64_t>& mins() const { return mins_; }
     uint64_t seed() const { return seed_; }
+    size_t size() const { return num_perm_; }
 
     static double jaccard(const MinHash& a, const MinHash& b) {
         if (a.num_perm_ != b.num_perm_ || a.seed_ != b.seed_) throw std::runtime_error("Incompatible MinHash for comparison");

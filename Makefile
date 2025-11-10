@@ -1,6 +1,6 @@
 # Compiler and flags
 CXX ?= g++
-CXXFLAGS ?= -O3 -std=c++17 -Iinclude -MMD -MP
+CXXFLAGS ?= -O3 -std=c++20 -Iinclude -MMD -MP
 
 # Dirs
 BIN_DIR := bin
