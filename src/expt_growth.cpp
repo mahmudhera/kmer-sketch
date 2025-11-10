@@ -311,7 +311,7 @@ static void run_experiment(double t,
         long double sum_sA = 0.0L, sum_sB = 0.0L;
 
         for (uint64_t s : seeds) {
-            std::cout << "Step " << step << ", n=" << n << ", seed=" << s << "\r";
+            std::cout << "Step " << step << ", n=" << n << ", seed=" << s << "\n";
             EstResult r;
             if (algo == "maxgeom") {
                 r = estimate_maxgeom(A, B, s, metric, k, w);
