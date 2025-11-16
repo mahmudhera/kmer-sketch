@@ -30,13 +30,17 @@ export PATH=/path/to/the/bin/directory/:$PATH
 The executables are generated in the bin/ directory. Kindly make sure to add the bin/ directory in your PATH variable.
 
 ## Quick start and demo
+Following is a simple example showing how to compute MaxGeomhash sketches of three plant genomes, and how to compute their pairwise k-mer based Jaccard similarity scores.
+
 ```bash
 # computing sketches
 sketch data/apple.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/apple.maxgeom.sketch
 sketch data/brassica.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/brassica.maxgeom.sketch
 sketch data/potato.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/potato.maxgeom.sketch
+
 # computing pairwise similarity scores
 pwsimilarity --metric jaccard --output data/demo_jaccard_scores.tsv data/*.maxgeom.sketch
+
 # view pairwise similarity scores
 cat data/demo_jaccard_scores.tsv
 ```
@@ -85,19 +89,4 @@ This program computes pairwise similarity from a list of sketch files. The argum
 Please cite the following preprint if you use MaxGeomHash or α-MaxGeomHash.
 ```
 Hera, M. Rahman, Koslicki, D., & Martínez, C. (2025). MaxGeomHash: An algorithm for variable-size random sampling of distinct elements [Preprint]. bioRxiv. https://doi.org/10.1101/2025.11.11.687920
-```
-
-The BibTex is as follows.
-```
-@article {Hera2025.11.11.687920,
-	author = {Hera, Mahmudur Rahman and Koslicki, David and Mart{\'\i}nez, Conrado},
-	title = {MaxGeomHash: An Algorithm for Variable-Size Random Sampling of Distinct Elements},
-	elocation-id = {2025.11.11.687920},
-	year = {2025},
-	doi = {10.1101/2025.11.11.687920},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2025/11/13/2025.11.11.687920},
-	eprint = {https://www.biorxiv.org/content/early/2025/11/13/2025.11.11.687920.full.pdf},
-	journal = {bioRxiv}
-}
 ```
