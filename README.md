@@ -1,5 +1,5 @@
-# MaxGeomHash & α-MaxGeomHash  
-A C++ implementation of MaxGeomHash and α-MaxGeomHash for 
+# MaxGeomHash & $\alpha$-MaxGeomHash  
+A C++ implementation of MaxGeomHash and $\alpha$-MaxGeomHash for 
 - k-mer sketching of FASTA/FASTQ files, and 
 - pairwise similarity estimation from k-mer sketches.
 
@@ -15,7 +15,7 @@ A C++ implementation of MaxGeomHash and α-MaxGeomHash for
 5. [Citing](#citing)
 
 ## Overview
-This repository provides efficient C++ implementations of **MaxGeomHash** and **α-MaxGeomHash**, two hashing–based sketching algorithms. The tools support several other sketching methods -- including FracMinHash, MinHash (bottom-k). From FASTA or FASTQ files, the tools can compute k-mer sketches using any of these sketching methods. The tools also allow for rapid pairwise similarity estimation using a number of sketches.
+This repository provides efficient C++ implementations of **MaxGeomHash** and **$\alpha$-MaxGeomHash**, two hashing–based sketching algorithms. The tools support several other sketching methods -- including FracMinHash, MinHash (bottom-k). From FASTA or FASTQ files, the tools can compute k-mer sketches using any of these sketching methods. The tools also allow for rapid pairwise similarity estimation using a number of sketches.
 
 All dependencies are either header-only or included with the repository. Compilation requires only `make`.
 
