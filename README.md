@@ -3,6 +3,15 @@ A C++ implementation of MaxGeomHash and α-MaxGeomHash for
 - k-mer sketching of FASTA/FASTQ files, and 
 - pairwise similarity estimation from k-mer sketches.
 
+## Table of Contents
+- [Overview](#overview)
+- [Build Instructions](#build-instructions)
+- [Quick start and demo](#quick-start-and-demo)
+- [Detailed usage](#detailed-usage)
+  - [sketch](#sketch)
+  - [pwsimilarity](#pwsimilarity)
+- [Citing](#citing)
+
 ## Overview
 This repository provides efficient C++ implementations of **MaxGeomHash** and **α-MaxGeomHash**, two hashing–based sketching algorithms. The tools support several other sketching methods -- including FracMinHash, MinHash (bottom-k). From FASTA or FASTQ files, the tools can compute k-mer sketches using any of these sketching methods. The tools also allow for rapid pairwise similarity estimation using a number of sketches.
 
@@ -15,11 +24,24 @@ Clone the repository and build:
 
 ```bash
 make
+export PATH=/path/to/the/bin/directory/:$PATH
 ```
 
 The executables are generated in the bin/ directory. Kindly make sure to add the bin/ directory in your PATH variable.
 
-## Programs
+## Quick start and demo
+```bash
+# computing sketches
+sketch data/apple.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/apple.maxgeom.sketch
+sketch data/brassica.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/brassica.maxgeom.sketch
+sketch data/potato.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/potato.maxgeom.sketch
+# computing pairwise similarity scores
+pwsimilarity --metric jaccard --output data/demo_jaccard_scores.tsv data/*.maxgeom.sketch
+# view pairwise similarity scores
+cat data/demo_jaccard_scores.tsv
+```
+
+## Detailed usage
 
 Two main programs are included:
 - `sketch`
@@ -54,3 +76,28 @@ This program computes pairwise similarity from a list of sketch files. The argum
 | `--metric METRIC`      | string             | jaccard        | Similarity metric to compute between sketches. Options: `jaccard`, `cosine`. |
 | `--output OUT.tsv`     | string (path)      | pairs.tsv      | Output TSV file containing pairwise similarity results. |
 | `SKETCH1 SKETCH2 ...`  | list of file paths | **required**   | Input sketch files to compare pairwise. |
+
+
+## Citing
+
+*The paper has been submitted to RECOMB-2025, and is currently under review.*
+
+Please cite the following preprint if you use MaxGeomHash or α-MaxGeomHash.
+```
+Hera, M. Rahman, Koslicki, D., & Martínez, C. (2025). MaxGeomHash: An algorithm for variable-size random sampling of distinct elements [Preprint]. bioRxiv. https://doi.org/10.1101/2025.11.11.687920
+```
+
+The BibTex is as follows.
+```
+@article {Hera2025.11.11.687920,
+	author = {Hera, Mahmudur Rahman and Koslicki, David and Mart{\'\i}nez, Conrado},
+	title = {MaxGeomHash: An Algorithm for Variable-Size Random Sampling of Distinct Elements},
+	elocation-id = {2025.11.11.687920},
+	year = {2025},
+	doi = {10.1101/2025.11.11.687920},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2025/11/13/2025.11.11.687920},
+	eprint = {https://www.biorxiv.org/content/early/2025/11/13/2025.11.11.687920.full.pdf},
+	journal = {bioRxiv}
+}
+```
