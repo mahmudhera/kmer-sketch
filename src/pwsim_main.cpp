@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
     std::ofstream out(outpath);
     if (!out) { std::cerr << "Cannot open output file: " << outpath << "\n"; return 3; }
-    out << "sketch1\tsketch2\t" << metric << "_score\tintersection\tsize1\tsize2\tunion\n";
+    out << "sketch1\tsketch2\t" << metric << "_score\n";
 
     // compute pairwise
     for (size_t i=0;i<sketches.size();++i) {
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
                 std::cerr << "Internal type mismatch between " << files[i] << " and " << files[j] << "\n";
                 continue;
             }
-            out << files[i] << "\t" << files[j] << "\t" << s << "\t" << inter << "\t" << size1 << "\t" << size2 << "\t" << uni << "\n";
+            out << files[i] << "\t" << files[j] << "\t" << s << "\n";
         }
     }
     std::cerr << "Wrote: " << outpath << "\n";
