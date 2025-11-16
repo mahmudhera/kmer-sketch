@@ -4,13 +4,15 @@ A C++ implementation of MaxGeomHash and α-MaxGeomHash for
 - pairwise similarity estimation from k-mer sketches.
 
 ## Table of Contents
-- [Overview](#overview)
-- [Build Instructions](#build-instructions)
-- [Quick start and demo](#quick-start-and-demo)
-- [Detailed usage](#detailed-usage)
-  - [sketch](#sketch)
-  - [pwsimilarity](#pwsimilarity)
-- [Citing](#citing)
+1. [Overview](#overview)
+2. [Build Instructions](#build-instructions)
+   - [Building](#building)
+   - [Verifying Installation](#verifying-installation)
+3. [Quick start and demo](#quick-start-and-demo)
+4. [Detailed usage](#detailed-usage)
+   - [`sketch`](#sketch)
+   - [`pwsimilarity`](#pwsimilarity)
+5. [Citing](#citing)
 
 ## Overview
 This repository provides efficient C++ implementations of **MaxGeomHash** and **α-MaxGeomHash**, two hashing–based sketching algorithms. The tools support several other sketching methods -- including FracMinHash, MinHash (bottom-k). From FASTA or FASTQ files, the tools can compute k-mer sketches using any of these sketching methods. The tools also allow for rapid pairwise similarity estimation using a number of sketches.
@@ -20,16 +22,21 @@ All dependencies are either header-only or included with the repository. Compila
 ---
 
 ## Build Instructions
-Clone the repository and build:
+
+### Building
+
+Clone the repository and build. The executables are generated in the bin/ directory. Kindly make sure to add the bin/ directory in your PATH variable.
 
 ```bash
 git clone https://github.com/mahmudhera/kmer-sketch
 cd kmer-sketch
 make
-export PATH=$pwd:$PATH
+export PATH=$(pwd):$PATH
 ```
 
-The executables are generated in the bin/ directory. Kindly make sure to add the bin/ directory in your PATH variable.
+### Verifying Installation
+
+Run `sketch -h` to verify installation.
 
 ## Quick start and demo
 Following is a simple example showing how to compute MaxGeomhash sketches of three plant genomes, and how to compute their pairwise k-mer based Jaccard similarity scores.
