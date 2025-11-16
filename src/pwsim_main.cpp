@@ -13,13 +13,34 @@ static void usage() {
               << "  pwsimilarity --metric {jaccard|cosine} --output OUT.tsv SKETCH1 SKETCH2 [SKETCH3 ...]\n";
 }
 
+static void detailed_usage() {
+    std::cerr << "Options:\n"
+              << "  --metric METRIC         Similarity metric to compute: jaccard (default), cosine\n"
+              << "  --output OUT.tsv        Output TSV file for pairwise similarities (default: pairs.tsv)\n"
+              << "  SKETCH1 SKETCH2 ...     Input sketch files to compare\n";
+}
+
 static std::string get_arg(std::vector<std::string>& args, const std::string& key, const std::string& def="") {
     for (size_t i=0;i<args.size();++i) if (args[i]==key && i+1<args.size()) return args[i+1];
     return def;
 }
 
 int main(int argc, char** argv) {
+
+    // check if --help is requested
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "-h") {
+            usage();
+            return 0;
+        } else if (arg == "--help") {
+            detailed_usage();
+            return 0;
+        }
+    }
+
     if (argc < 3) { usage(); return 1; }
+
     std::vector<std::string> args(argv+1, argv+argc);
     std::string metric = get_arg(args, "--metric", "jaccard");
     std::string outpath = get_arg(args, "--output", "pairs.tsv");

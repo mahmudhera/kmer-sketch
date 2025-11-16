@@ -31,7 +31,7 @@ This program creates the sketches. Following are the arguments.
 | Argument            | Argument Type | Default Value | What It Means |
 |---------------------|---------------|----------------|----------------|
 | `--input FILE`      | string (path) | **required**   | Input sequence file in FASTA or FASTQ format. |
-| `--kmer N`          | integer       | 31             | K-mer size to break sequences into. |
+| `--kmer N`          | integer       | 31             | k-mer size to break sequences into. |
 | `--algo ALGO`       | string        | **required**   | Sketching algorithm to use: `maxgeom`, `alphamaxgeom`, `fracminhash`, `minhash`, `bottomk`. |
 | `--k K`             | integer       | 1000           | (bottom-k) Sketch size *K* for bottom-k hashing. |
 | `--b B`             | integer       | 90             | (maxgeom) Bucket capacity *B* used in MaxGeomHash. |
@@ -44,3 +44,13 @@ This program creates the sketches. Following are the arguments.
 | `--keep-ambiguous`  | flag          | false          | Keep k-mers containing ambiguous bases instead of skipping. |
 | `--output OUT`      | string (path) | **required**   | Output sketch file path. |
 | `--help`, `-h`      | flag          | —              | Display help message and exit. |
+
+## `pwsimilarity`
+
+This program computes pairwise similarity from a list of sketch files. The arguments are as follows:
+
+| Argument               | Argument Type      | Default Value | What It Means |
+|------------------------|--------------------|----------------|----------------|
+| `--metric METRIC`      | string             | jaccard        | Similarity metric to compute between sketches. Options: `jaccard`, `cosine`. |
+| `--output OUT.tsv`     | string (path)      | pairs.tsv      | Output TSV file containing pairwise similarity results. |
+| `SKETCH1 SKETCH2 ...`  | list of file paths | **required**   | Input sketch files to compare pairwise. |
