@@ -43,15 +43,15 @@ Following is a simple example showing how to compute MaxGeomhash sketches of thr
 
 ```bash
 # computing sketches
-sketch --input data/apple.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/apple.maxgeom.sketch
-sketch --input data/brassica.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/brassica.maxgeom.sketch
-sketch --input data/potato.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/potato.maxgeom.sketch
+sketch --input data/ecoli-k12.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/ecoli-k12.maxgeom.sketch
+sketch --input data/ecoli-nctc.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/ecoli-nctc.maxgeom.sketch
+sketch --input data/ecoli-o157.fasta --kmer 31 --algo maxgeom --b 90 --w 64 --seed 42 --canonical --output data/ecoli-o157.maxgeom.sketch
 
 # computing pairwise similarity scores
-pwsimilarity --metric jaccard --output data/demo_jaccard_scores.tsv data/*.maxgeom.sketch
+pwsimilarity --metric jaccard --output data/ecoli_pw_scores.tsv data/*.maxgeom.sketch
 
 # view pairwise similarity scores
-cat data/demo_jaccard_scores.tsv
+cat data/ecoli_pw_scores.tsv
 ```
 
 ## Detailed usage
