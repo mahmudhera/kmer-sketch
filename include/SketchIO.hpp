@@ -90,7 +90,7 @@ inline bool compatible(const VariantSketch& a, const VariantSketch& b, std::stri
     // For algorithms with additional params, we could compare sizes by re-serializing headers,
     // but since our derived classes are concrete, we check important fields explicitly:
     if (a.maxgeom && b.maxgeom) {
-        if (a.maxgeom->k() != b.maxgeom->k() || a.maxgeom->w() != b.maxgeom->w()) { why = "MaxGeom params differ"; return false; }
+        if (a.maxgeom->b() != b.maxgeom->b() || a.maxgeom->w() != b.maxgeom->w()) { why = "MaxGeom params differ"; return false; }
     }
     if (a.alphamaxgeom && b.alphamaxgeom) {
         if (a.alphamaxgeom->w() != b.alphamaxgeom->w() || a.alphamaxgeom->alpha() != b.alphamaxgeom->alpha()) { why = "AlphaMaxGeom params differ"; return false; }

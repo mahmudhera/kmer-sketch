@@ -13,7 +13,7 @@
 static void usage() {
     std::cerr << "Usage:\n"
               << "  sketch --input FILE --kmer N --algo {maxgeom|alphamaxgeom|fracminhash|minhash|bottomk} "
-              << "[--k K] [--w W] [--alpha A] [--scale S] [--num-perm M] [--seed SEED] "
+              << "[--k K] [--b B] [--w W] [--alpha A] [--scale S] [--num-perm M] [--seed SEED] "
               << "[--canonical] [--keep-ambiguous] --output OUT\n";
 }
 
@@ -24,11 +24,12 @@ static void detailed_usage() {
               << "  --input FILE            Input FASTA/FASTQ file\n"
               << "  --kmer N                K-mer size (default: 31)\n"
               << "  --algo ALGO             Sketching algorithm to use: maxgeom, alphamaxgeom, fracminhash, minhash, bottomk\n"
-              << "  --k K                   (maxgeom, bottomk) Sketch size K (default: 64 for maxgeom, 1000 for bottomk)\n"
-              << "  --w W                   (maxgeom, alphamaxgeom) Window size W (default: 64)\n"
-              << "  --alpha A               (alphamaxgeom) Alpha parameter (default: 0.5)\n"
-              << "  --scale S               (fracminhash) Scale parameter (default: 0.1)\n"
-              << "  --num-perm M            (minhash) Number of permutations M (default: 128)\n"
+              << "  --k K                   (bottomk) Sketch size K (default: 1000)\n"
+              << "  --b B                   (maxgeom) Bucket capacity B (default: 90)\n"
+              << "  --w W                   (maxgeom, alphamaxgeom) Max number of buckets W (default: 64)\n"
+              << "  --alpha A               (alphamaxgeom) Alpha parameter (default: 0.45)\n"
+              << "  --scale S               (fracminhash) Scale parameter (default: 0.001)\n"
+              << "  --num-perm K            (minhash) Number of permutations K (default: 1000)\n"
               << "  --seed SEED             Random seed (default: 42)\n"
               << "  --canonical             Use canonical k-mers\n"
               << "  --keep-ambiguous        Keep ambiguous k-mers (default: skip them)\n"
@@ -81,9 +82,9 @@ int main(int argc, char** argv) {
     if (!out) { std::cerr << "Cannot open output file: " << outpath << "\n"; return 2; }
 
     if (algo == "maxgeom") {
-        size_t K = (size_t)std::stoull(get_arg(args, "--k", "64"));
+        size_t B = (size_t)std::stoull(get_arg(args, "--b", "90"));
         size_t W = (size_t)std::stoull(get_arg(args, "--w", "64"));
-        MaxGeomSample sketch(K, W, seed);
+        MaxGeomSample sketch(B, W, seed);
         // scan
         FastxReader reader(inpath);
         std::string header, seq;
@@ -92,7 +93,7 @@ int main(int argc, char** argv) {
         }
         sketch.write(out, kmer);
     } else if (algo == "alphamaxgeom") {
-        double alpha = std::stod(get_arg(args, "--alpha", "0.5"));
+        double alpha = std::stod(get_arg(args, "--alpha", "0.45"));
         size_t W = (size_t)std::stoull(get_arg(args, "--w", "64"));
         AlphaMaxGeomSample sketch(alpha, W, seed);
         FastxReader reader(inpath);
@@ -102,7 +103,7 @@ int main(int argc, char** argv) {
         }
         sketch.write(out, kmer);
     } else if (algo == "fracminhash") {
-        double scale = std::stod(get_arg(args, "--scale", "0.1"));
+        double scale = std::stod(get_arg(args, "--scale", "0.001"));
         FracMinHash sketch(scale, seed);
         FastxReader reader(inpath);
         std::string header, seq;
@@ -111,7 +112,7 @@ int main(int argc, char** argv) {
         }
         sketch.write(out, kmer);
     } else if (algo == "minhash") {
-        size_t M = (size_t)std::stoull(get_arg(args, "--num-perm", "128"));
+        size_t M = (size_t)std::stoull(get_arg(args, "--num-perm", "1000"));
         MinHash sketch(M, seed);
         FastxReader reader(inpath);
         std::string header, seq;

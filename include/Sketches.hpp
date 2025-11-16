@@ -33,10 +33,10 @@ public:
         uint64_t freq;
     };
 
-    MaxGeomSample(size_t k, size_t w=64, uint64_t seed=42)
-        : k_(k), w_(w), seed_(seed) {
+    MaxGeomSample(size_t b, size_t w=64, uint64_t seed=42)
+        : b_(b), w_(w), seed_(seed) {
         if (w_ < 1 || w_ > 64) throw std::runtime_error("w must be in [1,64]");
-        if (k_ == 0) throw std::runtime_error("k must be positive");
+        if (b_ == 0) throw std::runtime_error("b must be positive");
     }
 
     void add_hash(uint64_t h) {
@@ -49,7 +49,7 @@ public:
             it->second.freq += 1;
             return;
         }
-        if (bucket.size() < k_) {
+        if (bucket.size() < b_) {
             bucket.emplace(h, Entry{h, hprime, 1});
             heap.emplace(hprime, h);
         } else {
@@ -62,7 +62,7 @@ public:
     }
 
     double jaccard(const MaxGeomSample& other) const {
-        if (w_ != other.w_ || k_ != other.k_) throw std::runtime_error("Incompatible MaxGeomSample for Jaccard");
+        if (w_ != other.w_ || b_ != other.b_) throw std::runtime_error("Incompatible MaxGeomSample for Jaccard");
         size_t union_size = 0, inter_size = 0;
         for (const auto& kv : buckets_) {
             size_t i = kv.first;
@@ -80,7 +80,7 @@ public:
             for (auto x: other_hprimes) uni.push_back(x);
             std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
             uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
-            if (uni.size() > k_) uni.resize(k_);
+            if (uni.size() > b_) uni.resize(b_);
             union_size += uni.size();
             std::unordered_set<uint64_t> union_set(uni.begin(), uni.end());
             size_t c = 0;
@@ -93,8 +93,8 @@ public:
 
 
     double containment_in(const MaxGeomSample& other) const {
-        if (w_ != other.w_ || k_ != other.k_)
-            throw std::runtime_error("Incompatible MaxGeomSample for Containment (w or k differ)");
+        if (w_ != other.w_ || b_ != other.b_)
+            throw std::runtime_error("Incompatible MaxGeomSample for Containment (w or b differ)");
         size_t inter_sum = 0, denom_sum = 0;
 
         for (const auto& kv : buckets_) {
@@ -115,7 +115,7 @@ public:
             for (auto x: other_hprimes) uni.push_back(x);
             std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
             uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
-            if (uni.size() > k_) uni.resize(k_);
+            if (uni.size() > b_) uni.resize(b_);
 
             std::unordered_set<uint64_t> allow(uni.begin(), uni.end());
 
@@ -136,7 +136,7 @@ public:
 
 
     double cosine(const MaxGeomSample& other) const {
-        if (w_ != other.w_ || k_ != other.k_) throw std::runtime_error("Incompatible MaxGeomSample for Cosine");
+        if (w_ != other.w_ || b_ != other.b_) throw std::runtime_error("Incompatible MaxGeomSample for Cosine");
         double dot = 0.0, n1 = 0.0, n2 = 0.0;
         for (const auto& kv : buckets_) {
             size_t i = kv.first;
@@ -151,7 +151,7 @@ public:
             for (auto& p : f2) uni.push_back(p.first);
             std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
             uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
-            if (uni.size() > k_) uni.resize(k_);
+            if (uni.size() > b_) uni.resize(b_);
             for (auto hpr : uni) {
                 double a = double(f1.count(hpr) ? f1[hpr] : 0);
                 double b = double(f2.count(hpr) ? f2[hpr] : 0);
@@ -165,7 +165,7 @@ public:
     }
 
     size_t w() const { return w_; }
-    size_t k() const { return k_; }
+    size_t b() const { return b_; }
     uint64_t seed() const { return seed_; }
     const std::unordered_map<size_t, std::unordered_map<uint64_t, Entry>>& buckets() const { return buckets_; }
 
@@ -175,7 +175,7 @@ public:
         out << "# kmer_size=" << kmer_size << "\n";
         out << "# hash_seed=" << seed_ << "\n";
         out << "# hash_function=MurmurHash3_x64_128_low64\n";
-        out << "# params.k=" << k_ << "\n";
+        out << "# params.b=" << b_ << "\n";
         out << "# params.w=" << w_ << "\n";
         out << "# fields: bucket_index,h,hprime,freq\n";
         for (const auto& kv : buckets_) {
@@ -250,7 +250,7 @@ private:
     void evict_smallest(size_t i) {
         auto& bucket = buckets_[i];
         auto& heap = heaps_[i];
-        while (bucket.size() > k_) {
+        while (bucket.size() > b_) {
             if (heap.empty()) break;
             auto [hp, h] = heap.top();
             heap.pop();
@@ -262,7 +262,7 @@ private:
         }
     }
 
-    size_t k_;
+    size_t b_;
     size_t w_;
     uint64_t seed_;
     std::unordered_map<size_t, std::unordered_map<uint64_t, Entry>> buckets_;
@@ -283,14 +283,14 @@ public:
         : alpha_(alpha), w_(w), seed_(seed) {
         if (!(alpha > 0.0 && alpha < 1.0)) throw std::runtime_error("alpha must be in (0,1)");
         if (w_ < 1 || w_ > 64) throw std::runtime_error("w must be in [1,64]");
-        k_sizes_.resize(w_+1, 1);
+        b_sizes_.resize(w_+1, 1);
         double beta = alpha_/(1.0-alpha_);
         for (size_t i=0; i<=w_; ++i) {
             double val = std::pow(2.0, beta * (double)i);
             // take ceiling of val
-            size_t k = (size_t)std::ceil(val);
-            if (k < 1) k = 1;
-            k_sizes_[i] = k;
+            size_t b = (size_t)std::ceil(val);
+            if (b < 1) b = 1;
+            b_sizes_[i] = b;
         }
     }
 
@@ -304,7 +304,7 @@ public:
             it->second.freq += 1;
             return;
         }
-        if (bucket.size() < k_sizes_[i]) {
+        if (bucket.size() < b_sizes_[i]) {
             bucket.emplace(h, Entry{h,hprime,1});
             heap.emplace(hprime, h);
         } else {
@@ -335,7 +335,7 @@ public:
             for (auto x: other_hprimes) uni.push_back(x);
             std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
             uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
-            size_t cap = k_sizes_[i];
+            size_t cap = b_sizes_[i];
             if (uni.size() > cap) uni.resize(cap);
             union_size += uni.size();
             std::unordered_set<uint64_t> union_set(uni.begin(), uni.end());
@@ -369,7 +369,7 @@ public:
             for (auto x: other_hprimes) uni.push_back(x);
             std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
             uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
-            size_t cap = k_sizes_[i];
+            size_t cap = b_sizes_[i];
             if (uni.size() > cap) uni.resize(cap);
 
             std::unordered_set<uint64_t> allow(uni.begin(), uni.end());
@@ -403,7 +403,7 @@ public:
             for (auto& p : f2) uni.push_back(p.first);
             std::sort(uni.begin(), uni.end(), std::greater<uint64_t>());
             uni.erase(std::unique(uni.begin(), uni.end()), uni.end());
-            size_t cap = k_sizes_[i];
+            size_t cap = b_sizes_[i];
             if (uni.size() > cap) uni.resize(cap);
             for (auto hpr : uni) {
                 double a = double(f1.count(hpr) ? f1[hpr] : 0);
@@ -502,7 +502,7 @@ private:
     void evict_smallest(size_t i) {
         auto& bucket = buckets_[i];
         auto& heap = heaps_[i];
-        while (bucket.size() > k_sizes_[i]) {
+        while (bucket.size() > b_sizes_[i]) {
             if (heap.empty()) break;
             auto [hp, h] = heap.top();
             heap.pop();
@@ -517,7 +517,7 @@ private:
     double alpha_;
     size_t w_;
     uint64_t seed_;
-    std::vector<size_t> k_sizes_;
+    std::vector<size_t> b_sizes_;
     std::unordered_map<size_t, std::unordered_map<uint64_t, Entry>> buckets_;
     struct MinCmp { bool operator()(const std::pair<uint64_t,uint64_t>& a,
                                     const std::pair<uint64_t,uint64_t>& b) const {
