@@ -188,7 +188,7 @@ public:
 
     static MaxGeomSample read(std::istream& in, size_t& kmer_size, uint64_t& seed_out) {
         std::string line;
-        size_t k=0, w=64;
+        size_t b=0, w=64;
         while (std::getline(in, line)) {
             if (line.empty()) continue;
             if (line[0] != '#') break;
@@ -198,11 +198,11 @@ public:
             std::string val = line.substr(pos+1);
             if (key=="kmer_size") kmer_size = std::stoull(val);
             else if (key=="hash_seed") seed_out = std::stoull(val);
-            else if (key=="params.k") k = std::stoull(val);
+            else if (key=="params.b") b = std::stoull(val);
             else if (key=="params.w") w = std::stoull(val);
         }
-        if (k==0) throw std::runtime_error("MaxGeomSample.read: missing params.k");
-        MaxGeomSample s(k,w,seed_out);
+        if (b==0) throw std::runtime_error("MaxGeomSample.read: missing params.b");
+        MaxGeomSample s(b,w,seed_out);
         if (!line.empty() && line[0] != '#') {
             size_t i; uint64_t h, hp, f;
             std::replace(line.begin(), line.end(), ',', ' ');
