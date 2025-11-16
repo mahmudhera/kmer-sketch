@@ -23,8 +23,10 @@ All dependencies are either header-only or included with the repository. Compila
 Clone the repository and build:
 
 ```bash
+git clone https://github.com/mahmudhera/kmer-sketch
+cd kmer-sketch
 make
-export PATH=/path/to/the/bin/directory/:$PATH
+export PATH=$pwd:$PATH
 ```
 
 The executables are generated in the bin/ directory. Kindly make sure to add the bin/ directory in your PATH variable.
@@ -69,7 +71,6 @@ This program creates the sketches. Following are the arguments.
 | `--canonical`       | flag          | false          | Treat each k-mer as canonical (min of forward/reverse complement). |
 | `--keep-ambiguous`  | flag          | false          | Keep k-mers containing ambiguous bases instead of skipping. |
 | `--output OUT`      | string (path) | **required**   | Output sketch file path. |
-| `--help`, `-h`      | flag          | —              | Display help message and exit. |
 
 ## `pwsimilarity`
 
