@@ -77,6 +77,10 @@ int main(int argc, char** argv) {
     KmerScanOptions opt;
     opt.k = kmer; opt.seed = seed; opt.canonical = canonical; opt.skip_ambiguous = !keep_ambiguous;
 
+    // check if input file can be opened
+    std::ifstream in(inpath);
+    if (!in) { std::cerr << "Cannot open input file: " << inpath << "\n"; return 1; }
+
     // Instantiate sketch
     std::ofstream out(outpath);
     if (!out) { std::cerr << "Cannot open output file: " << outpath << "\n"; return 2; }
