@@ -31,7 +31,7 @@ Clone the repository and build. The executables are generated in the bin/ direct
 git clone https://github.com/mahmudhera/kmer-sketch
 cd kmer-sketch
 make
-export PATH=$(pwd):$PATH
+export PATH=$(pwd)/bin:$PATH
 ```
 
 ### Verifying Installation
